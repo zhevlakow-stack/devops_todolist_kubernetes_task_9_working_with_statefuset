@@ -1,22 +1,50 @@
+### 1. Create the `kind` Cluster
 
-### Check Pod
+```bash
+kind create cluster --config cluster.yml
+```
 
-kubectl get pods -n mysql
+This will set up a cluster with control-plane and worker nodes as defined in `cluster.yml`
 
-### Check Pod Logs
+### 2. Deploy the Application and Database
 
-kubectl logs mysql-statefulset-0 -n mysql
+Run the `bootstrap.sh` script to deploy all the necessary Kubernetes resources into `todoapp` namespace
 
-### Config and Secret check 
+```bash
+bootstrap.sh
+```
 
-kubectl exec -it mysql-statefulset-0 -n mysql -- /bin/sh
+The script will:
+1. Create the `todoapp` namespace
+2. Deploy the MySQL database as a StatefulSet with 3 replicas
+3. Wait for the MySQL pods to become ready
+4. Deploy the Django ToDo application
+5. Expose the application via a NodePort service
 
-ls /app/secrets
-cat /app/secrets/<file-name>
+### 3. Validate the Deployment
+#### Check Pods
+Verify that the MySQL and ToDo application pods are running
 
-ls /app/secrets
-cat /app/secrets/<file-name>
+```bash
+kubectl get pods -n todoapp
+```
 
-### DNS check
+#### Check Services
+Verify that the services are created.
 
-ping mysql-0.mysql-service.mysql
+```bash
+kubectl get svc -n todoapp
+```
+
+#### Check Persistent Volumes
+The StatefulSet creates PersistentVolumeClaims (PVCs) automatically. Check their status.
+
+```bash
+kubectl get pvc -n todoapp
+```
+
+### 4. Access the Application
+
+The application is exposed on `localhost` at port `30007`
+
+Open your web browser and navigate to [http://localhost:30007](http://localhost:30007)

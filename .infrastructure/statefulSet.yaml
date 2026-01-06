@@ -48,15 +48,18 @@ spec:
             requests:
               cpu: 500m
               memory: 1Gi
+            limits:
+              memory: 256Mi
+              cpu: 150m
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping"]
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD"]
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping"]
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD"]
             initialDelaySeconds: 5
             periodSeconds: 2
             timeoutSeconds: 1
